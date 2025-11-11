@@ -1,0 +1,50 @@
+services:
+
+  # ollama:
+  #   image: ollama/ollama:latest
+  #   container_name: ollama
+  #   ports:
+  #     - 11434:11434
+  #   volumes:
+  #     - ollama_data:/root/.ollama
+  #   environment:
+  #     - OLLAMA_NUM_PARALLEL=1
+  #     - OLLAMA_MAX_LOADED_MODELS=1
+
+  #https://github.com/ggml-org/llama.cpp/blob/master/docs/docker.md
+  #docker run --gpus all -v /path/to/models:/models local/llama.cpp:full-cuda --run -m /models/7B/ggml-model-q4_0.gguf -p "Building a website can be done in 10 simple steps:" -n 512 --n-gpu-layers 1
+  # llamacpp:
+  #   #image: ghcr.io/ggml-org/llama.cpp:full
+  #   image: ghcr.io/ggml-org/llama.cpp:full-cuda
+  #   volumes:
+  #     - ./.docker/llama/models:/llama/models
+  #   environment:
+  #     - CUDA_VERSION=13.0.2
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [gpu]
+
+  llamacpptest:
+    build:
+      context: .
+      # args:
+      #   - WORKLOAD=monolith
+    volumes:
+      - ./.docker/llama/models:/llama/models
+    entrypoint: [
+      "bash",
+      "-c",
+      "echo 123;sleep 1000"
+      #"./app/build/bin/llama-cli -m models/Llama-3.2-3B-Instruct-Q4_K_M.gguf -p 'Why is the blue sky blue?'' -no-cnv -e -ngl 100 -t 4"
+    ]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
